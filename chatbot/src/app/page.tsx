@@ -1,12 +1,14 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, FileText, X } from 'lucide-react';
+import { Upload, FileText, X, Link as LinkIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function ChatbotUI() {
   const [dragOver, setDragOver] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [url, setUrl] = useState('');
+  const [isUrlProcessing, setIsUrlProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -21,10 +23,14 @@ export default function ChatbotUI() {
         });
         
         if (!response.ok) {
-          console.error('Failed to clear document context');
+          const data = await response.json();
+          setError(data.detail || 'Failed to clear document context');
+          console.error('Failed to clear document context:', data.detail);
         }
       } catch (error) {
-        console.error('Error clearing document context:', error);
+        const message = error instanceof Error ? error.message : 'Error clearing document context';
+        setError(message);
+        console.error('Error clearing document context:', message);
       }
     };
 
@@ -80,8 +86,10 @@ export default function ChatbotUI() {
           body: formData,
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-          throw new Error(`Failed to upload ${file.name}`);
+          throw new Error(data.detail || `Failed to upload ${file.name}`);
         }
       }
 
@@ -91,6 +99,44 @@ export default function ChatbotUI() {
       setError(err instanceof Error ? err.message : 'Failed to process files');
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleUrlSubmit = async () => {
+    if (!url.trim()) {
+      setError('Please enter a valid URL');
+      return;
+    }
+
+    // Validate URL format
+    if (!url.trim().startsWith('http://') && !url.trim().startsWith('https://')) {
+      setError('Invalid URL. Must start with http:// or https://');
+      return;
+    }
+
+    setIsUrlProcessing(true);
+    setError(null);
+
+    try {
+      const response = await fetch('http://localhost:8000/url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Failed to process the URL');
+      }
+
+      // Clear the URL input and navigate to chat
+      setUrl('');
+      router.push('/chatbot');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to process URL');
+    } finally {
+      setIsUrlProcessing(false);
     }
   };
 
@@ -136,6 +182,32 @@ export default function ChatbotUI() {
                   <Upload className="w-5 h-5 mr-2" />
                   Upload
                 </button>
+
+                {/* URL Input Option */}
+                <div className="mt-8">
+                  <div className="flex items-center justify-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Paste webpage URL here"
+                      value={url}
+                      onChange={e => setUrl(e.target.value)}
+                      className="w-96 px-4 py-2 border border-slate-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    />
+                    <button
+                      onClick={handleUrlSubmit}
+                      disabled={isUrlProcessing}
+                      className={`inline-flex items-center px-4 py-2 bg-indigo-500 text-white font-medium rounded-lg hover:bg-indigo-600 transition-colors duration-200 shadow hover:shadow-lg ${
+                        isUrlProcessing ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      <LinkIcon className="w-4 h-4 mr-1" />
+                      {isUrlProcessing ? 'Processing...' : 'Add URL'}
+                    </button>
+                  </div>
+                  <p className="text-slate-500 text-sm mt-2">
+                    You can also provide a webpage URL to process its content.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -203,7 +275,7 @@ export default function ChatbotUI() {
                 No Documents
               </h2>
               <p className="text-slate-600">
-                Start by uploading a document first
+                Start by uploading a document or providing a webpage URL
               </p>
             </div>
           )}
