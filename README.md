@@ -115,43 +115,6 @@ This multi-agent architecture allows for:
 
 ---
 
-#### Agent Sequence Flow
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Frontend
-    participant Orchestrator
-    participant DocAgent
-    participant WebAgent
-    participant ChromaDB
-    participant LLM
-
-    User->>Frontend: Upload PDF/URL
-    Frontend->>Orchestrator: Send content
-    alt is PDF
-        Orchestrator->>DocAgent: Process PDF
-        DocAgent->>DocAgent: Extract & Chunk
-        DocAgent-->>Orchestrator: Return chunks
-    else is URL
-        Orchestrator->>WebAgent: Scrape URL
-        WebAgent->>WebAgent: Clean & Extract
-        WebAgent-->>Orchestrator: Return content
-    end
-    Orchestrator->>ChromaDB: Store embeddings
-    
-    User->>Frontend: Ask question
-    Frontend->>Orchestrator: Query
-    Orchestrator->>ChromaDB: Search
-    ChromaDB-->>Orchestrator: Return relevant chunks
-    Orchestrator->>LLM: Generate response
-    LLM-->>Orchestrator: Return answer
-    Orchestrator-->>Frontend: Send response
-    Frontend-->>User: Display answer
-```
-
----
-
 #### Screenshots
 
 Step 1: User uploads the PDF / URL  
@@ -177,7 +140,7 @@ Step 3: User asks a question related to the PDF / URL
 
 2. Start the FastAPI backend:
    ```bash
-   uvicorn backend.rag:app --reload
+   python rag.py
    ```
 
 3. Make sure Ollama is running and the required models are installed.
