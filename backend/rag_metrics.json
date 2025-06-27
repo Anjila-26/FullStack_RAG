@@ -1,0 +1,21 @@
+{
+  "query_metrics": [],
+  "system_metrics": [
+    {
+      "timestamp": "2025-06-27T23:31:41.260003",
+      "total_queries": 0,
+      "avg_response_time": 0.0,
+      "success_rate": 0.0,
+      "total_documents": 0,
+      "memory_usage_mb": 219.33984375,
+      "cpu_usage_percent": 10.1
+    }
+  ],
+  "summary_stats": {
+    "total_queries": 0,
+    "success_rate": 0.0,
+    "avg_response_time": 0.0,
+    "recent_queries": 0
+  },
+  "last_updated": "2025-06-27T23:31:42.274233"
+}
