@@ -14,6 +14,27 @@ This is a comprehensive multi-agent RAG-based chatbot system with advanced featu
 
 ---
 
+## Screenshots
+
+Step 1: User uploads the PDF / URL  
+<img src="screenshots/landing_page.png" />
+
+Step 2: Landing page for the chat  
+<img src="screenshots/chat_page.png" />
+
+Step 3: User asks a question related to the PDF / URL
+1. When PDF:  
+<img src="screenshots/pdf_answers.png" />
+2. When Url:
+<img src="screenshots/url_answers.png" />
+
+### Evaluation System in Action
+Real-time evaluation on 4 key metrics: Relevance, Groundedness, Retrieval, and Correctness
+<img src="screenshots/eval.png" />
+<img src="screenshots/evaluation.png" />
+
+---
+
 ## Multi-Agent Architecture with Communication
 
 The system implements a **simple message passing architecture** where specialized agents communicate through a central message bus:
@@ -185,27 +206,6 @@ Evaluation Agent → User: Return answer with evaluation metrics
 - **Error Isolation**: Agent failures don't crash the entire system
 - **Scalability**: Easy to add new agents with specific capabilities
 - **Monitoring**: Complete audit trail of all system activities
-
----
-
-## Screenshots
-
-Step 1: User uploads the PDF / URL  
-<img src="screenshots/landing_page.png" />
-
-Step 2: Landing page for the chat  
-<img src="screenshots/chat_page.png" />
-
-Step 3: User asks a question related to the PDF / URL
-1. When PDF:  
-<img src="screenshots/pdf_answers.png" />
-2. When Url:
-<img src="screenshots/url_answers.png" />
-
-### Evaluation System in Action
-Real-time evaluation on 4 key metrics: Relevance, Groundedness, Retrieval, and Correctness
-<img src="screenshots/eval.png" />
-<img src="screenshots/evaluation.png" />
 
 ---
 
