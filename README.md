@@ -141,6 +141,7 @@ Step 3: User asks a question related to the PDF / URL
 
 ### Evaluation on the 3 important basis
 Relevance, Groundness and Retrieval
+<img src="screenshots/eval.png" />
 <img src="screenshots/evaluation.png" />
 
 ---
