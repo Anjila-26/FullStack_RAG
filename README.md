@@ -4,13 +4,13 @@ This is a comprehensive multi-agent RAG-based chatbot system with advanced featu
 
 ## Key Features
 
-🤖 **Multi-Agent Communication**: Simple message passing system between specialized agents
-🕷️ **Advanced Website Crawling**: Single URL processing with async HTTP requests
-📊 **RAG Performance Evaluation**: Comprehensive evaluation system with multiple metrics
-📈 **Real-time Monitoring**: Agent activity tracking and performance monitoring
-🔍 **Enhanced Content Extraction**: Advanced text processing with multiple extraction methods
-⚡ **FastAPI REST API**: Complete API for integration and automation
-🎯 **Evaluation Metrics**: Correctness, relevance, groundedness, and retrieval quality assessment
+- 🤖 **Multi-Agent Communication**: Simple message passing system between specialized agents
+- 🕷️ **Advanced Website Crawling**: Single URL processing with async HTTP requests
+- 📊 **RAG Performance Evaluation**: Comprehensive evaluation system with multiple metrics
+- 📈 **Real-time Monitoring**: Agent activity tracking and performance monitoring
+- 🔍 **Enhanced Content Extraction**: Advanced text processing with multiple extraction methods
+- ⚡ **FastAPI REST API**: Complete API for integration and automation
+- 🎯 **Evaluation Metrics**: Correctness, relevance, groundedness, and retrieval quality assessment
 
 ---
 
