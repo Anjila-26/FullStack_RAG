@@ -445,3 +445,137 @@ async def get_system_status() -> Dict[str, Any]:
     }
     
     return status
+
+class SimpleMessageBus:
+    """Simple message bus for basic agent communication"""
+    
+    def __init__(self):
+        self.agents = {}
+        self.shared_data = {}
+        # Register a system coordinator by default
+        self.register_agent("system")
+    
+    def register_agent(self, name: str, handler_func=None):
+        """Register an agent with optional message handler"""
+        self.agents[name] = {
+            "status": "idle",
+            "handler": handler_func,
+            "messages": []
+        }
+        logger.info(f"Registered agent: {name}")
+    
+    async def send_message(self, from_agent: str, to_agent: str, message_type: str, data: dict):
+        """Send a simple message between agents"""
+        if to_agent not in self.agents:
+            # Instead of error, just log and ignore messages to non-existent agents
+            logger.debug(f"Message ignored: {to_agent} not found (from {from_agent})")
+            return False
+        
+        message = {
+            "from": from_agent,
+            "type": message_type,
+            "data": data,
+            "timestamp": datetime.now()
+        }
+        
+        self.agents[to_agent]["messages"].append(message)
+        
+        # Call handler if available
+        if self.agents[to_agent]["handler"]:
+            try:
+                await self.agents[to_agent]["handler"](message)
+            except Exception as e:
+                logger.error(f"Error in handler for {to_agent}: {e}")
+        
+        logger.debug(f"Message sent: {from_agent} -> {to_agent} ({message_type})")
+        return True
+    
+    def get_messages(self, agent_name: str):
+        """Get all messages for an agent"""
+        if agent_name in self.agents:
+            messages = self.agents[agent_name]["messages"].copy()
+            self.agents[agent_name]["messages"].clear()  # Clear after reading
+            return messages
+        return []
+    
+    def set_shared_data(self, key: str, value: Any, agent_name: str = "system"):
+        """Set shared data"""
+        self.shared_data[key] = {
+            "value": value,
+            "updated_by": agent_name,
+            "timestamp": datetime.now()
+        }
+        logger.debug(f"Shared data set: {key} by {agent_name}")
+    
+    def get_shared_data(self, key: str, default=None):
+        """Get shared data"""
+        if key in self.shared_data:
+            return self.shared_data[key]["value"]
+        return default
+    
+    def update_agent_status(self, agent_name: str, status: str):
+        """Update agent status"""
+        if agent_name in self.agents:
+            self.agents[agent_name]["status"] = status
+            logger.debug(f"Agent {agent_name} status: {status}")
+
+class SimpleAgent:
+    """Simple base agent class"""
+    
+    def __init__(self, name: str):
+        self.name = name
+        self.bus = simple_bus
+        self.bus.register_agent(name, self.handle_message)
+    
+    async def handle_message(self, message):
+        """Handle incoming messages - override in subclasses"""
+        logger.debug(f"{self.name} received: {message['type']} from {message['from']}")
+    
+    async def send_message(self, to_agent: str, message_type: str, data: dict):
+        """Send message to another agent"""
+        return await self.bus.send_message(self.name, to_agent, message_type, data)
+    
+    def set_status(self, status: str):
+        """Update agent status"""
+        self.bus.update_agent_status(self.name, status)
+    
+    def set_shared_data(self, key: str, value: Any):
+        """Set shared data"""
+        self.bus.set_shared_data(key, value, self.name)
+    
+    def get_shared_data(self, key: str, default=None):
+        """Get shared data"""
+        return self.bus.get_shared_data(key, default)
+
+class SimpleCoordinator(SimpleAgent):
+    """Simple system coordinator"""
+    
+    def __init__(self):
+        super().__init__("system")
+        self.activity_log = []
+    
+    async def handle_message(self, message):
+        """Handle system messages and log activities"""
+        if message["type"] == "status_update":
+            data = message["data"]
+            activity = {
+                "agent": data.get("agent", message["from"]),
+                "activity": data.get("activity", "unknown"),
+                "timestamp": message["timestamp"],
+                "details": data
+            }
+            self.activity_log.append(activity)
+            
+            # Keep only last 100 activities
+            if len(self.activity_log) > 100:
+                self.activity_log.pop(0)
+            
+            logger.info(f"Activity logged: {activity['agent']} - {activity['activity']}")
+    
+    def get_recent_activities(self, limit=10):
+        """Get recent activities"""
+        return self.activity_log[-limit:]
+
+# Global simple message bus
+simple_bus = SimpleMessageBus()
+coordinator = SimpleCoordinator()

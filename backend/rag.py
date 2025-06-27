@@ -9,6 +9,7 @@ from loguru import logger
 
 from document_agent import process_pdf
 from scrape_agent import scrape_url
+from agent_communication import simple_bus, coordinator
 
 # Langchain and database imports
 from langchain_ollama import OllamaEmbeddings, ChatOllama
@@ -498,6 +499,62 @@ async def evaluator_health():
             "evaluator_initialized": False,
             "message": "Evaluator not initialized"
         }
+
+@app.get("/agents/status")
+async def get_simple_agent_status():
+    """Get simple agent status"""
+    try:
+        status = {}
+        for name, info in simple_bus.agents.items():
+            status[name] = {
+                "status": info["status"],
+                "message_count": len(info["messages"])
+            }
+        
+        return {
+            "agents": status,
+            "shared_data_keys": list(simple_bus.shared_data.keys())
+        }
+    except Exception as e:
+        logger.error(f"Error getting agent status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/agents/shared_data")
+async def get_shared_data():
+    """Get all shared data"""
+    try:
+        data = {}
+        for key, info in simple_bus.shared_data.items():
+            data[key] = {
+                "value": info["value"],
+                "updated_by": info["updated_by"],
+                "timestamp": info["timestamp"].isoformat()
+            }
+        return {"shared_data": data}
+    except Exception as e:
+        logger.error(f"Error getting shared data: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/agents/activities")
+async def get_recent_activities(limit: int = 20):
+    """Get recent agent activities"""
+    try:
+        activities = coordinator.get_recent_activities(limit)
+        return {
+            "activities": [
+                {
+                    "agent": activity["agent"],
+                    "activity": activity["activity"],
+                    "timestamp": activity["timestamp"].isoformat(),
+                    "details": activity["details"]
+                }
+                for activity in activities
+            ],
+            "total_activities": len(activities)
+        }
+    except Exception as e:
+        logger.error(f"Error getting activities: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.delete("/clear")
 async def clear_database():
