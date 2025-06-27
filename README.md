@@ -343,7 +343,7 @@ Relevance, Groundness and Retrieval
 
 3. Start the Next.js development server:
    ```bash
-   npm run dev
+   npx next dev
    # or
    yarn dev
    ```
