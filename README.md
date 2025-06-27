@@ -125,6 +125,26 @@ The system now includes specialized agents with enhanced capabilities:
 
 ---
 
+#### Screenshots
+
+Step 1: User uploads the PDF / URL  
+<img src="screenshots/landing_page.png" />
+
+Step 2: Landing page for the chat  
+<img src="screenshots/chat_page.png" />
+
+Step 3: User asks a question related to the PDF / URL
+1. When PDF:  
+<img src="screenshots/pdf_answers.png" />
+2. When Url:
+<img src="screenshots/url_answers.png" />
+
+### Evaluation on the 3 important basis
+Relevance, Groundness and Retrieval
+<img src="screenshots/evaluation.png" />
+
+---
+
 #### Steps
 
 1. **PDF Upload:** Upload a PDF, which is parsed and chunked using PyMuPDFLoader.
@@ -282,26 +302,6 @@ The Next.js frontend provides a modern, responsive interface with comprehensive 
 - **Auto-scroll**: Automatic scrolling to latest messages
 - **Error Handling**: Graceful error messages and recovery
 - **Responsive Design**: Works on desktop and mobile devices
-
----
-
-#### Screenshots
-
-Step 1: User uploads the PDF / URL  
-<img src="screenshots/landing_page.png" />
-
-Step 2: Landing page for the chat  
-<img src="screenshots/chat_page.png" />
-
-Step 3: User asks a question related to the PDF / URL
-1. When PDF:  
-<img src="screenshots/pdf_answers.png" />
-2. When Url:
-<img src="screenshots/url_answers.png" />
-
-### Evaluation on the 3 important basis
-Relevance, Groundness and Retrieval
-<img src="screenshots/evaluation.png" />
 
 ---
 
